@@ -31,7 +31,8 @@ static = no
 COMPILER_FLAGS += -std=c++14 -I. -m$(bits) -MD -MP -Wpedantic -pedantic-errors \
 	-Wall -Wextra -Wuninitialized -Wstrict-overflow=4 -Wundef -Wshadow \
 	-Wcast-qual -Wcast-align -Wmissing-declarations -Wredundant-decls -Wvla \
-	-Wno-unused-parameter -Wno-sign-compare -Wno-maybe-uninitialized -Wno-overflow
+	-Wno-unused-parameter -Wno-sign-compare -Wno-maybe-uninitialized -Wno-overflow \
+	-fpic
 
 VERSION_INFO="$(shell git describe --exact-match 2> /dev/null)"
 ifeq ($(VERSION_INFO),"")
@@ -128,6 +129,7 @@ makefile_directory:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 clean:
 	$(RM) bbpPairings.exe
+	$(RM) bbpPairings.dll
 	find $(makefile_directory) -name \*.o -type f -delete
 	find $(makefile_directory) -name \*.d -type f -delete
 
@@ -136,5 +138,8 @@ default:
 
 bbpPairings.exe: $(OBJECTS)
 	$(CXX) -o $@ $(OBJECTS) $(LDFLAGS)
+
+bbpPairings.dll: $(OBJECTS)
+	$(CXX) -shared -o $@ $(OBJECTS) $(LDFLAGS)
 
 -include $(OBJECTS:%.o=%.d)
